@@ -1,0 +1,47 @@
+{
+    "name": "ts_server_init",
+    "version": "1.0.0",
+    "description": "test This project has some public util method",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon -e ts --exec ts-node --project tsconfig.json --files src/index.ts",
+        "build": "rimraf -rf ./dist && rimraf -rf ./types  && tsc",
+        "test": "ts-node --project tsconfig.json --files  ./src/libs/excel.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wanghanxiang/ts_server_init.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/wanghanxiang/nodejs_tool/issues"
+    },
+    "homepage": "https://github.com/wanghanxiang/nodejs_tool#readme",
+    "devDependencies": {
+        "@types/ioredis": "^4.26.4",
+        "@types/node": "^15.12.4",
+        "@types/node-rsa": "^1.1.0",
+        "@types/redlock": "^4.0.1",
+        "@types/request-promise": "^4.1.47",
+        "ioredis": "^5.0.5",
+        "nodemon": "^2.0.13",
+        "redlock": "^4.2.0",
+        "rimraf": "^3.0.2",
+        "ts-node": "^10.2.1",
+        "typescript": "^4.3.4"
+    },
+    "dependencies": {
+        "@types/uuid": "^8.3.4",
+        "axios": "^0.21.1",
+        "bufferhelper": "^0.2.1",
+        "iconv-lite": "^0.6.3",
+        "moment": "^2.29.1",
+        "node-rsa": "^1.1.1",
+        "node-xlsx": "^0.17.1",
+        "reflect-metadata": "^0.1.13",
+        "request": "^2.88.2",
+        "request-promise": "^4.2.6"
+    }
+}
