@@ -14,7 +14,7 @@ export class JobScheduler {
     constructor(callback: (args: [string]) => void) {
         this.callback = callback;
         this.watchDelayed();
-        this.runExecuted();
+        this.runExecute();
     }
 
     public async addTask(task: taskParams): Promise<string> {
@@ -30,7 +30,8 @@ export class JobScheduler {
             }
         } else {
             try {
-                this.runCallback(task.args, newTask)
+                //添加到任务队列中
+                await this.redisClient.rpush('execute:', newTask);
             } catch (err) {
                 console.log('[JobScheduler] This task fails and is added to the failure queue');
             }
@@ -45,31 +46,32 @@ export class JobScheduler {
                 const executedTask = delayedTask[0];
                 if (await this.redisClient.zrem('delayed:', executedTask)) {
                     const executedTaskJson = JSON.parse(executedTask);
+                    //放入执行队列中执行
                     await this.redisClient.rpush('execute:', executedTask);
-                    this.runCallback(executedTaskJson[1], executedTask);
                 }
             }
         }, 1)
     }
 
-    public async runExecuted() {
-        while (await this.redisClient.llen('execute:')) {
-            const task = await this.redisClient.lpop('execute:');
-            if (task) {
-                const executedTaskJson = JSON.parse(task);
-                this.addTask({ args: executedTaskJson[1], delay: 0 });
-            }
-
+    /**
+     * 执行任务队列中需要跑的
+     */
+    public async runExecute() {
+        while (true) {
+            console.info("存在可以执行的任务")
+            const task = await this.redisClient.blpop('execute:' , 3000);
+            //[ 'execute:', '["2e8aa6c5-8343-4bcb-b8b3-73a322d4120d",["1"]]' ]
+            if (!task) continue;
+            const executedTaskJson = JSON.parse(task[1]);
+            this.runTask(executedTaskJson[1], executedTaskJson);
         }
     }
 
-    public async runCallback(args: [string], executedTask: string) {
-        await this.redisClient.rpush('execute:', executedTask);
+    public async runTask(args: [string], executedTask: string) {
         try {
             await this.callback(args);
         } catch (err) {
             console.log('[JobScheduler] This task fails and is added to the failure queue');
         }
-        await this.redisClient.lrem('execute:', 1, executedTask);
     }
 }

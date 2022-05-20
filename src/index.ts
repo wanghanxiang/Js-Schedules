@@ -29,9 +29,15 @@ const scheduler = new JobScheduler(callback);
 const task1: taskParams = { args: ['1'], delay: 3000 };
 const task2: taskParams = { args: ['2'], delay: 5000 };
 const task3: taskParams = { args: ['3'], delay: 0 };
-const task4: taskParams = { args: ['4'], delay: 6000 };
+const task4: taskParams = { args: ['4'], delay: 15000 };
 
 scheduler.addTask(task1);
 scheduler.addTask(task2);
 scheduler.addTask(task3);
 scheduler.addTask(task4);
+
+for (let i = 0; i < 10; i++) {
+  sleep(10000).then((res) => {
+    scheduler.addTask(task2);
+  });
+}
